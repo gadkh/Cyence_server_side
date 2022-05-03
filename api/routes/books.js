@@ -5,12 +5,14 @@ const {
     getAllBooks, 
     createBook,
     updateBook,
-    deleteBook
+    deleteBook,
+    getBooks
 } = require('../controllers/books_controlles');
 
 
 router.get('/', getAllBooks);
 router.post('/', createBook);
+router.get('/:bookId',getBooks)
 router.patch('/:bookId', updateBook);
 router.delete('/:bookId', deleteBook);
 
