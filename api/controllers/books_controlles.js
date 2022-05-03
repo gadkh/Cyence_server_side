@@ -1,10 +1,11 @@
 const bookModel = require('../models/books_model');
+const UserModel = require('../models/users_model');
 const mongoose = require('mongoose');
 
 module.exports = {
 
     getAllBooks: (req, res) => {
-        bookModel.find().then((books) => {
+        bookModel.find().populate('useryId', 'author_pseudonym').then((books) => {
             res.status(200).json({
                 books
             })
@@ -16,18 +17,29 @@ module.exports = {
     },
 
     createBook: (req, res) => {
-        const { title, description, cover_image, price } = req.body;
-        const book_Model = new bookModel({
-            _id: new mongoose.Types.ObjectId(),
-            title,
-            description,
-            cover_image,
-            price
-        });
-        book_Model.save().then(() => {
+        const { title, description, cover_image, price, useryId } = req.body;
+
+        UserModel.findById(useryId).then((user) => {
+            if (!user){
+                return res.status(404).json({
+                    message: "User not found"
+                })
+            }
+
+            const book_Model = new bookModel({
+                _id: new mongoose.Types.ObjectId(),
+                title,
+                description,
+                cover_image,
+                price,
+                useryId
+            });
+
+            return book_Model.save();
+        }).then(() => {
             res.status(200).json({
                 message: "Created book"
-            })
+            });
         }).catch(error => {
             res.status(500).json({
                 error
@@ -37,7 +49,7 @@ module.exports = {
 
     getBooks: (req, res) =>{
         const bookId = req.params.bookId
-        bookModel.findById(bookId).then((book) => {
+        bookModel.findById(bookId).populate('useryId', 'author_pseudonym').then((book) => {
             res.status(200).json({
                 book
             })
