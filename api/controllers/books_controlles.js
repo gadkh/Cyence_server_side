@@ -62,16 +62,32 @@ module.exports = {
 
     updateBook: (req, res) => {
         const bookId = req.params.bookId;
+        const { userId } = req.body;
 
-        bookModel.updateOne({_id: bookId}, req.body).then(() =>{
+        bookModel.findById(bookId).then((book) => {
+            if (!book) {
+                return res.status(404).json({
+                    message: 'Book not found'
+                })
+            }
+        }).then(() => {
+            if (userId) {
+                res.status(404).json({
+                    message: "Can't change user id"
+                })
+            }
+
+            return bookModel.updateOne({_id: bookId}, req.body);
+        }).then(() => {
             res.status(200).json({
-                message: `Update book: ${bookId}`
-            })
+                message: `Book updated: ${bookId}`
+            });
         }).catch(error => {
-            res.status(500).json({
+            res.status(200).json({
                 error
             });
         });
+
     },
 
     deleteBook: (req, res) => {
