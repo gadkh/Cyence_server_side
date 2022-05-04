@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const checkAuth = require('../middlewares/checkAuth')
 
 const {
     getAllBooks, 
@@ -11,9 +12,10 @@ const {
 
 
 router.get('/', getAllBooks);
-router.post('/', createBook);
-router.get('/:bookId',getBooks)
-router.patch('/:bookId', updateBook);
-router.delete('/:bookId', deleteBook);
+router.get('/:bookId',getBooks);
+
+router.post('/', checkAuth, createBook);
+router.patch('/:bookId', checkAuth, updateBook);
+router.delete('/unpublished/:bookId', checkAuth, deleteBook);
 
 module.exports = router;

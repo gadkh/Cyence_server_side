@@ -4,13 +4,10 @@ const router = express.Router();
 const {
     sinup,
     login,
-    delteUser,
-    updateUser,
 } = require('../controllers/user_controller');
 
-router.get('/', login);
-router.post('/', sinup);
-router.delete('/:userId', delteUser);
-router.patch('/:userId', updateUser);
+router.post('/login', login);
+router.post('/singup', sinup);
+
 
 module.exports = router;

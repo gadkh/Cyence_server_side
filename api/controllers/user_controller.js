@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const UserModel = require('../models/users_model');
+const jwt = require('jsonwebtoken');
 
 module.exports = {
     sinup: (req, res) => {
         const { username, password, author_pseudonym } = req.body;
         console.log(username)
-        UserModel.find({username}).then((user) => {
+        UserModel.find({ username }).then((user) => {
             if (user.length >= 1) {
                 console.log(user)
                 return res.status(404).json({
@@ -34,28 +35,35 @@ module.exports = {
     },
 
     login: (req, res) => {
-        UserModel.find().then((users)=>{
-            res.status(200).json({
-                users
-            })
-        }).catch(error => {
-            res.status(200).json({
-                error
-            })
+        const { username, password } = req.body;
+
+        UserModel.find({ username }).then((users) => {
+            if (users.length === 0) {
+                return res.status(401).json({
+                    message: "Auth faild"
+                })
+            }
+
+            const [user] = users;
+            if (password != user.password){
+                return res.status(500).json({
+                    message: "Auth faild"
+                });
+            }
+
+            const token = jwt.sign({
+                id: user.id,
+                username: user.username,
+            },process.env.JWT_KEY,
+            {
+                expiresIn: "1H"
+            }
+            );
+            return res.status(200).json({
+                message: "Auth successful",
+                token
+            });
         })
     },
 
-    delteUser: (req, res) => {
-        const userId = req.params.userId;
-        res.status(200).json({
-            message: `Delete user: ${userId}`
-        })
-    },
-
-    updateUser: (res, req) => {
-        const userId = req.params.userId;
-        res.status(200).json({
-            message: `Update user: ${userId}`
-        })
-    }
 }
