@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const checkAuth = require('../middlewares/checkAuth')
+const checkAuth = require('../middlewares/checkAuth');
+const multer = require('multer');
+
+const upload = multer({
+    dest: './upload'
+});
 
 const {
     getAllBooks, 
@@ -14,7 +19,7 @@ const {
 router.get('/', getAllBooks);
 router.get('/:bookId',getBooks);
 
-router.post('/', checkAuth, createBook);
+router.post('/', checkAuth, upload.single('cover_image'), createBook);
 router.patch('/:bookId', checkAuth, updateBook);
 router.delete('/unpublished/:bookId', checkAuth, deleteBook);
 

@@ -3,7 +3,7 @@ const UserModel = require('../models/users_model');
 const jwt = require('jsonwebtoken');
 
 module.exports = {
-    sinup: (req, res) => {
+    signup: (req, res) => {
         const { username, password, author_pseudonym } = req.body;
         console.log(username)
         UserModel.find({ username }).then((user) => {

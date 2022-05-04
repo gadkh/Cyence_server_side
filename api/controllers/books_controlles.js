@@ -17,8 +17,8 @@ module.exports = {
     },
 
     createBook: (req, res) => {
-        const { title, description, cover_image, price, userId } = req.body;
-
+        const { path: cover_image } = req.file;
+        const { title, description, price, userId } = req.body;
         UserModel.findById(userId).then((user) => {
             if (!user){
                 return res.status(404).json({
@@ -30,7 +30,7 @@ module.exports = {
                 _id: new mongoose.Types.ObjectId(),
                 title,
                 description,
-                cover_image,
+                cover_image: cover_image.replace('\\','/'),
                 price,
                 userId
             });
@@ -41,6 +41,7 @@ module.exports = {
                 message: "Created book"
             });
         }).catch(error => {
+            console.log("ASDASDD")
             res.status(500).json({
                 error
             });
